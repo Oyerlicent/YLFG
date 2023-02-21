@@ -1,0 +1,77 @@
+package com.yinlie.aspect;
+
+import com.alibaba.fastjson.JSON;
+import com.yinlie.annotation.SystemLog;
+import lombok.extern.slf4j.Slf4j;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import javax.servlet.http.HttpServletRequest;
+
+/**
+ * @author Oyerlicent
+ * @create 2023-02-05 22:30
+ **/
+
+@Component
+@Aspect
+@Slf4j
+public class LogAspect {
+
+    @Pointcut("@annotation(com.yinlie.annotation.SystemLog)")
+    public void pt(){
+
+    }
+
+    @Around("pt()")
+    public Object printLog(ProceedingJoinPoint proceedingJoinPoint) throws Throwable{
+        Object ret;
+        try {
+            handleBefore(proceedingJoinPoint);
+            ret = proceedingJoinPoint.proceed();
+            handleAfter(ret);
+        } finally {
+            log.info("=======End=======" + System.lineSeparator());
+        }
+        return ret;
+    }
+
+    private void handleAfter(Object ret) {
+        // 打印出参
+        log.info("Response       : {}",JSON.toJSONString(ret) );
+    }
+
+    private void handleBefore(ProceedingJoinPoint proceedingJoinPoint) {
+
+        ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = requestAttributes.getRequest();
+
+        SystemLog systemLog = getSystemLog(proceedingJoinPoint);
+
+        log.info("=======Start=======");
+        // 打印请求 URL
+        log.info("URL            : {}",request.getRequestURL());
+        // 打印描述信息
+        log.info("BusinessName   : {}",systemLog.businessName() );
+        // 打印 Http method
+        log.info("HTTP Method    : {}",request.getMethod() );
+        // 打印调用 controller 的全路径以及执行方法
+        log.info("Class Method   : {}.{}",proceedingJoinPoint.getSignature().getDeclaringTypeName(),((MethodSignature) proceedingJoinPoint.getSignature()).getName());
+        // 打印请求的 IP
+        log.info("IP             : {}",request.getRemoteHost());
+        // 打印请求入参
+        log.info("Request Args   : {}", JSON.toJSONString(proceedingJoinPoint.getArgs()));
+    }
+
+    private SystemLog getSystemLog(ProceedingJoinPoint proceedingJoinPoint) {
+        MethodSignature signature = (MethodSignature) proceedingJoinPoint.getSignature();
+        SystemLog annotation = signature.getMethod().getAnnotation(SystemLog.class);
+        return annotation;
+    }
+}

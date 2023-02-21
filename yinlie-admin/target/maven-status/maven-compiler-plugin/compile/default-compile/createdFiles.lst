@@ -1,0 +1,4 @@
+com\yinlie\controller\TagController.class
+com\yinlie\filter\JwtAuthenticationTokenFilter.class
+com\yinlie\config\SecurityConfig.class
+com\yinlie\BlogAdminApplication.class

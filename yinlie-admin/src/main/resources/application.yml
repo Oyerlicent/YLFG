@@ -1,0 +1,28 @@
+server:
+  port: 8989
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/yinlie_blog?characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: admin
+  servlet:
+    multipart:
+      max-request-size: 5MB
+      max-file-size: 2MB
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto
+      logic-not-delete-value: 0
+      logic-delete-value: 1
+      logic-delete-field: deFlag
+
+
+oss:
+  accessKey: BWKQovjheMIXiB5GwbaQqGDEh48Qwk-OjdIF8E5f
+  secretKey: Wo-dfVIbL7GJ3jUuSF7A0f2z00tOvgZ-cMeN4UKd
+  bucket: yinlie-admin

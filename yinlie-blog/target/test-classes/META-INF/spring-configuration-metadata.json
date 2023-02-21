@@ -1,0 +1,11 @@
+{
+  "groups": [
+    {
+      "name": "oss",
+      "type": "com.yinlie.OSSTest",
+      "sourceType": "com.yinlie.OSSTest"
+    }
+  ],
+  "properties": [],
+  "hints": []
+}
